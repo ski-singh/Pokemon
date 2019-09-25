@@ -96,34 +96,5 @@ class MainActivity : AppCompatActivity(),clickHandler {
         setContentView(R.layout.activity_main)
 
 
-
-//      rv.layoutManager= LinearLayoutManager(this)
-//        val client=OkHttpClient()
-//        val request=Request.Builder()
-//            .url("https://pokeapi.co/api/v2/pokemon/psyduck").build()
-//        val call=client.newCall(request)
-//
-//        call.enqueue(object : Callback{
-//            override fun onResponse(response: Response?) {
-//                val responseBody: ResponseBody? = response?.body()
-//                val result=responseBody?.string()
-//                val parsedObject=gson.fromJson(result,Response::class.java)
-//                Log.e("name",parsedObject.name)
-//                Log.e("id",parsedObject.id.toString())
-//                Log.e("height",parsedObject.height.toString())
-//                Log.e("weight",parsedObject.weight.toString())
-//                Log.e("order",parsedObject.order.toString())
-//                Log.e("baseExperience",parsedObject.baseExperience.toString())
-//
-//            }
-//
-//            override fun onFailure(request: Request?, e: IOException?) {
-//                Log.e("REQUEST","Request failed")
-//            }
-//
-//
-//
-//        })
-
     }
 }

@@ -3,7 +3,6 @@ package com.example.pokemon.UI
 import android.arch.persistence.room.Room
 import android.content.Context
 import android.util.Log
-import android.widget.Toast
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.example.pokemon.Database.Pokemon

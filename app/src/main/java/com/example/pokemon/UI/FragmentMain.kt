@@ -1,20 +1,13 @@
 package com.example.pokemon.UI
 
-import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.AlertDialog
 import android.arch.persistence.room.Room
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
-import android.support.constraint.Constraints
-import android.support.v4.app.ActivityCompat.*
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.AppCompatAutoCompleteTextView
 import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.*
 import android.widget.ArrayAdapter
@@ -32,52 +25,59 @@ import com.squareup.okhttp.Request
 import com.squareup.okhttp.ResponseBody
 import kotlinx.android.synthetic.main.alert_view.view.*
 import kotlinx.android.synthetic.main.fragment_main.*
-
 import java.io.IOException
 import java.util.concurrent.TimeUnit
-import android.support.v4.app.ActivityCompat as ActivityCompat
-import java.util.jar.Manifest as Manifest
+
 
 class FragmentMain:Fragment(){
 
 
-    val gson= Gson()
+
     lateinit var SearchString:String
     lateinit var  adapter: rvAdapter
     lateinit var  pokemon:Pokemon
-    var pokeCount:Int=0
     lateinit var searchedPokemon:Pokemon
-     lateinit var pokeName: Array<String>
+    lateinit var pokeName: Array<String>
+    var pokeCount:Int=0
     val pokelist= arrayListOf<Pokemon>()
+    val gson= Gson()
+
+
+
     val db by lazy{ Room.databaseBuilder(requireContext(),
         PokemonDatabase::class.java,
         "Pokemon1.db").fallbackToDestructiveMigration().allowMainThreadQueries().build()}
 
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState:Bundle?): View? {
         return inflater.inflate(R.layout.fragment_main,container,false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
        val constraints=androidx.work.Constraints.Builder().
            setRequiredNetworkType(NetworkType.CONNECTED)
            .setRequiresBatteryNotLow(true)
            .build()
+
         val data=Data.Builder()
             .putString("URL","https://pokeapi.co/api/v2/pokemon").build()
+
 
         val pokeFetcherRequest= OneTimeWorkRequestBuilder<PokeFetcher>()
             .setInitialDelay(10,TimeUnit.HOURS)
             .setConstraints(constraints)
             .setInputData(data).build()
+
         WorkManager.getInstance().enqueue(pokeFetcherRequest)
 
         val peroidicFetcher= PeriodicWorkRequestBuilder<PokeFetcher>(1,TimeUnit.DAYS)
             .setConstraints(constraints)
             .setInputData(data)
             .build()
+
         WorkManager.getInstance().enqueue(peroidicFetcher)
 
         pokelist.addAll(db.pokemonDao().getAll())
@@ -93,16 +93,14 @@ class FragmentMain:Fragment(){
 
         fab.setOnClickListener{
 
-
-
             val view= LayoutInflater.from(requireContext()).
                 inflate(R.layout.alert_view,null,false)
             pokeName=db.pokemonDao().getName()
+
             val autoTextView=view.alertEt as AppCompatAutoCompleteTextView?
             val adapt=ArrayAdapter<String>(requireContext(),android.R.layout.select_dialog_item,pokeName)
             autoTextView?.threshold=1
             autoTextView?.setAdapter(adapt)
-
 
 
             val alertDia=AlertDialog.Builder(requireContext())
@@ -111,16 +109,20 @@ class FragmentMain:Fragment(){
                 .setPositiveButton("Search") { dialog, which ->
                     val alertet = view.alertEt as EditText
                     SearchString = alertet?.text.toString()
+                    if (SearchString in pokeName)
+                    {
                     val id = db.pokemonDao().getId(SearchString)
                     Log.e("id",id.toString())
 
 
                     if (id==0) {
 
+
                         val client = OkHttpClient()
                         val request = Request.Builder()
                             .url("https://pokeapi.co/api/v2/pokemon/" + SearchString).build()
                         val call = client.newCall(request)
+
 
                         call.enqueue(object : Callback {
                             override fun onResponse(response: com.squareup.okhttp.Response?) {
@@ -172,14 +174,20 @@ class FragmentMain:Fragment(){
                     } else {
 
                         searchedPokemon = db.pokemonDao().getPokemon(SearchString)
-                        val intnt=Intent(context,Main2Activity::class.java)
-                        intnt.putExtra("pokename",SearchString)
+                        val intnt = Intent(context, Main2Activity::class.java)
+                        intnt.putExtra("pokename", SearchString)
 
                         ContextCompat.startActivity(requireContext(), intnt, null)
+                    }
 
 
 
 
+                    }
+                    else
+                    {
+                        val toast=Toast.makeText(context,"INVALID POKEMON NAME",Toast.LENGTH_SHORT)
+                            toast.show()
                     }
                 }.create()
             alertDia.show()
