@@ -1,5 +1,6 @@
 package com.example.pokemon.UI
 
+
 import android.app.AlertDialog
 import android.arch.persistence.room.Room
 import android.content.Intent
@@ -55,6 +56,8 @@ class FragmentMain:Fragment(){
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+
 
 
        val constraints=androidx.work.Constraints.Builder().

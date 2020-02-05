@@ -1,15 +1,13 @@
 package com.example.pokemon.UI
 
-import android.Manifest
-import android.app.Activity
 import android.arch.persistence.room.Room
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
 import android.util.Log
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.widget.Toast
 import com.example.pokemon.Database.Pokemon
 import com.example.pokemon.Database.PokemonDatabase
@@ -24,10 +22,13 @@ import java.io.IOException
 class MainActivity : AppCompatActivity(),clickHandler {
 
 
+
+
     val gson=Gson()
     val db by lazy{ Room.databaseBuilder(this,
         PokemonDatabase::class.java,
         "Pokemon1.db").fallbackToDestructiveMigration().allowMainThreadQueries().build()}
+
     override fun handleOnClick(name: String) {
         Log.e("handle name",name)
         val id = db.pokemonDao().getId(name)
@@ -92,9 +93,33 @@ class MainActivity : AppCompatActivity(),clickHandler {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContentView(R.layout.activity_main)
 
 
+
+
+
+
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater:MenuInflater=menuInflater
+        inflater.inflate(R.menu.menu_main,menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+
+
+        return when(item?.itemId) {
+            R.id.update -> {
+
+                val toast=Toast.makeText(this,"updating",Toast.LENGTH_SHORT).show()
+                true
+            }
+
+
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 }
